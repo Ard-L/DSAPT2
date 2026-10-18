@@ -59,7 +59,7 @@ header p {
     width: min(1200px, 94%);
     margin: 28px auto 50px;
     display: grid;
-    grid-template-columns: 330px 1fr;
+    grid-template-columns: 330px minmax(0, 1fr);
     gap: 22px;
 }
 
@@ -148,6 +148,7 @@ button:hover {
 
 .main {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 22px;
 }
 
@@ -621,8 +622,9 @@ function generateRandom() {
     stopSimulation();
 
     const arr = [];
-    for (let i = 0; i < 8; i++) {
-        arr.push(Math.floor(Math.random() * 90) + 10);
+    while (arr.length < 8) {
+        const n = Math.floor(Math.random() * 90) + 10;
+        if (!arr.includes(n)) arr.push(n); // no duplicates
     }
 
     document.getElementById("numbers").value = arr.join(", ");
@@ -801,6 +803,12 @@ function startSimulation() {
 
     if (values.length === 0) {
         setStatus("Please enter at least one valid number.");
+        return;
+    }
+
+    const duplicates = [...new Set(values.filter((v, i) => values.indexOf(v) !== i))];
+    if (duplicates.length > 0) {
+        setStatus("Duplicate numbers are not allowed: " + duplicates.join(", ") + ". Remove them and try again.");
         return;
     }
 
